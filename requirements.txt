@@ -1,0 +1,12 @@
+yfinance
+pandas
+matplotlib
+seaborn
+vaderSentiment
+nltk
+tqdm
+requests
+scikit-learn
+beautifulsoup4
+praw
+dotenv
