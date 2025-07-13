@@ -9,21 +9,26 @@ load_dotenv()
 reddit = praw.Reddit(
     client_id=os.getenv("REDDIT_CLIENT_ID"),
     client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
-    user_agent=os.getenv("REDDIT_USER_AGENT"),
+    user_agent="sentiment-tracker"
 )
 
-def get_reddit_posts(subreddit="wallstreetbets", query="Tesla", days=7, limit=500):
+def get_reddit_posts(query="Elon", subreddit="stocks", days=7, limit=500):
     end_time = datetime.now(timezone.utc)
     start_time = end_time - timedelta(days=days)
 
     posts = []
     for submission in reddit.subreddit(subreddit).search(query, sort="new", time_filter="all", limit=limit):
-        created = datetime.fromtimestamp(submission.created_utc, tz=timezone.utc)
-        if created < start_time:
+        created_time = datetime.fromtimestamp(submission.created_utc, tz=timezone.utc)
+        if created_time < start_time:
             continue
         posts.append({
-            "created_utc": created,
-            "text": submission.title + " " + submission.selftext
+            "id": submission.id,
+            "date": created_time.date(),
+            "created_utc": created_time,
+            "title": submission.title,
+            "selftext": submission.selftext,
+            "subreddit": subreddit,
+            "query": query
         })
 
     return pd.DataFrame(posts)
