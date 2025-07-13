@@ -12,6 +12,7 @@ This project uses Reddit sentiment + stock metrics to predict TSLA stock returns
 - Outputs plots and forecast files
 
 ---
+```
 
 ## Folder Structure
 Stock-Sentiment/
@@ -30,6 +31,7 @@ Stock-Sentiment/
 ├── run_lstm.py                  # Main LSTM runner
 ├── report.md                    # Project report
 └── README.md                    # This file
+```
 ---
 
 ## Sample Output
@@ -55,5 +57,5 @@ Stock-Sentiment/
 
 ---
 
-## 📜 License
+## License
 MIT License
