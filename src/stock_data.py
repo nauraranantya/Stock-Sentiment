@@ -1,31 +1,31 @@
 import yfinance as yf
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
-def get_stock_data(ticker, days=60):
-    end_date = datetime.now()
+def get_stock_data(ticker="TSLA", days=30):
+    end_date = datetime.now(timezone.utc)
     start_date = end_date - timedelta(days=days)
-    
-    # Download data
-    df = yf.download(ticker, start=start_date, end=end_date, auto_adjust=True)
-    
-    # Reset index to make 'Date' a regular column
-    df = df.reset_index()
-    
-    # If there are multiple levels in columns, flatten them
+
+    df = yf.download(ticker, start=start_date, end=end_date)
+
     if isinstance(df.columns, pd.MultiIndex):
-        df.columns = df.columns.droplevel(1)
+        df.columns = [col[0] if isinstance(col, tuple) else col for col in df.columns]
+
+    df = df.reset_index()
+    if 'Date' in df.columns:
+        df.rename(columns={'Date': 'date'}, inplace=True)
+    elif 'index' in df.columns:
+        df.rename(columns={'index': 'date'}, inplace=True)
     
-    # Rename columns to match your main.py expectations
-    df = df.rename(columns={
-        'Date': 'date',
-        'Close': 'stock_close'
-    })
+    df['date'] = pd.to_datetime(df['date']).dt.date
+    desired_columns = ['date', 'Open', 'Close', 'High', 'Low', 'Volume']
     
-    # Convert date to date object (not datetime) to match sentiment data
-    df['date'] = df['date'].dt.date
+    existing_desired_columns = [col for col in desired_columns if col in df.columns]
     
-    # Keep only the columns you need
-    df = df[['date', 'stock_close']]
-    
+    if len(existing_desired_columns) < len(desired_columns):
+        missing_cols = set(desired_columns) - set(existing_desired_columns)
+        print(f"\n--- Warning: Missing desired stock data columns: {missing_cols} ---")
+
+    df = df[existing_desired_columns]
+
     return df

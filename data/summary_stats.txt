@@ -1,0 +1,5 @@
+total_posts: 168
+date_range: 2025-04-04 to 2025-07-12
+sentiment_avg: 0.0448559670781893
+sentiment_std: 0.3075508549204147
+data_points: 54
